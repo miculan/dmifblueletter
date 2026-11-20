@@ -1,0 +1,296 @@
+%% =============================================================================
+%%  TEMPLATE DI LETTERA SU CARTA INTESTATA BLU DMIF  (Università di Udine)
+%%  Classe: dmifblueletter.cls  (derivata da dmifletter v1.1, a sua volta
+%%  derivata dalla classe standard `letter')
+%% =============================================================================
+%%
+%%  COME SI USA
+%%    1. Copiare questo file con un altro nome (es. lettera-rossi.tex).
+%%    2. Compilare le parti marcate con "COMPILARE" e sostituire il testo rosso
+%%       [tra parentesi quadre] con quello vero (macro \fillin, vedi sotto).
+%%    3. Cancellare i blocchi opzionali che non servono.
+%%
+%%  FILE NECESSARI (nella stessa cartella di questo file)
+%%    dmifblueletter.cls   la classe
+%%    dmif-sfondo.png      fondo grafico: logo DMIF, filetti, logo Ateneo, marchi
+%%    firma.png            FACOLTATIVO: immagine della firma (se manca, la
+%%                         lettera compila lo stesso, senza immagine)
+%%
+%%  COME COMPILARE
+%%    pdflatex template.tex        oppure        latexmk -pdf template.tex
+%%    Su Overleaf: compilatore pdfLaTeX (quello predefinito).
+%%    La classe è stata provata solo con pdfLaTeX: non usare XeLaTeX/LuaLaTeX.
+%%    Una sola passata basta; se si carica hyperref ne servono due (latexmk le
+%%    fa da solo).
+%%
+%%  COSA FA LA CLASSE
+%%    * Disegna la carta intestata blu su TUTTE le pagine: logo e testi in alto,
+%%      logo Ateneo e testi in basso.
+%%    * Il testo occupa l'area fra intestazione e piè di pagina: parte a 113.4 bp
+%%      (4 cm) dal bordo alto e finisce 113.4 bp prima del bordo basso.
+%%    * Dalla seconda pagina compare "Page n" in blu, in alto a destra (con
+%%      l'opzione italian la parola è tradotta da babel).
+%%    * Il resto è il comportamento di `letter': data e destinatario a destra,
+%%      oggetto, saluto, testo, formula di chiusura e firma.
+%% =============================================================================
+
+
+%% =============================================================================
+%%  1. CLASSE E OPZIONI
+%% =============================================================================
+%%  Le opzioni si scrivono fra parentesi quadre, separate da virgole.
+%%
+%%  LINGUA DELLA LETTERA
+%%    (nessuna)   Lettera in inglese: "Subject", data "Udine, November 20, 2026".
+%%                È il comportamento predefinito.
+%%    italian     Lettera in italiano: "Oggetto", data "Udine, lì 20 novembre 2026"
+%%                (la classe carica da sola babel con l'italiano: NON caricare
+%%                babel a mano). Serve il pacchetto babel-italian, presente in
+%%                TeX Live e Overleaf.
+%%    english     Equivale a non scrivere nulla; si può omettere. Se presente,
+%%                LaTeX può segnalare "Unused global option(s): english": è
+%%                innocuo.
+%%
+%%  LINGUA DELL'INTESTAZIONE (indipendente da quella della lettera)
+%%    (nessuna)    Intestazione in italiano: "Dipartimento di scienze
+%%                 Matematiche, Informatiche e Fisiche", "33100 Udine, Italia".
+%%    englishhead  Intestazione in inglese: "Department of Mathematics, Computer
+%%                 Science and Physics", "33100 Udine, Italy"; le etichette
+%%                 opzionali del piè di pagina diventano "Person in charge of
+%%                 the procedure" e "Prepared by".
+%%
+%%  STAMPA
+%%    nosfondo    Non disegna la carta intestata (né immagine né testi): serve
+%%                per stampare su carta intestata reale già stampata.
+%%
+%%  CORPO DEL TESTO (opzioni standard di LaTeX)
+%%    10pt (predefinito) | 11pt | 12pt      dimensione del carattere
+%%    Le altre opzioni standard di `letter' (fleqn, leqno, draft...) sono
+%%    passate alla classe. Il formato è sempre A4 e non si cambia.
+%%
+%%  Esempi
+%%    \documentclass[11pt]{dmifblueletter}                    inglese / italiano
+%%    \documentclass[italian,11pt]{dmifblueletter}            italiano / italiano
+%%    \documentclass[11pt,englishhead]{dmifblueletter}        inglese / inglese
+%%    \documentclass[italian,11pt,englishhead]{dmifblueletter}  italiano / inglese
+%%    \documentclass[11pt,nosfondo]{dmifblueletter}           su carta già intestata
+%%
+%%  COMPILARE: scegliere la combinazione voluta
+\documentclass[italian,11pt]{dmifblueletter}
+
+
+%% =============================================================================
+%%  2. PACCHETTI E PERSONALIZZAZIONI DEL PREAMBOLO
+%% =============================================================================
+%%  La classe carica già: ifthen, epsfig/graphicx, xcolor, eso-pic, url
+%%  (e babel con l'italiano se si usa l'opzione `italian').
+
+%% Codifica del file sorgente (necessaria per scrivere accenti direttamente,
+%% es. è, à, ü; con TeX Live recente è già la codifica predefinita).
+\usepackage[utf8]{inputenc}
+
+%% --- Collegamenti cliccabili (facoltativo) ---------------------------------
+%%  Se si carica hyperref, email e sito web del piè di pagina diventano link
+%%  cliccabili. L'opzione hidelinks toglie i riquadri colorati intorno ai link.
+%%  Va caricato DOPO la classe, cioè qui.
+% \usepackage[hidelinks]{hyperref}
+
+%% --- Carattere del testo (facoltativo) -------------------------------------
+%%  Per impostazione predefinita il testo è in Computer Modern (con grazie);
+%%  intestazione e piè di pagina sono sempre in Helvetica. Per avere Helvetica
+%%  anche nel testo, togliere il commento alle tre righe seguenti.
+% \usepackage[T1]{fontenc}
+% \usepackage{helvet}
+% \renewcommand{\familydefault}{\sfdefault}
+
+%% --- Segnaposto per le parti da completare ---------------------------------
+%%  \fillin{testo} stampa [testo] in rosso corsivo, per non dimenticare nulla.
+%%  Prima dell'invio cercare "\fillin" nel sorgente: non deve restarne nessuno.
+%%  Per disattivare tutti i segnaposto con un colpo solo, sostituire la
+%%  definizione con:  \newcommand{\fillin}[1]{#1}
+\newcommand{\fillin}[1]{\textcolor{red}{[\textit{#1}]}}
+
+
+%% =============================================================================
+%%  3. DATI DEL MITTENTE  (valgono per tutte le lettere del file)
+%% =============================================================================
+
+%% COMPILARE: nome del mittente. Compare nel piè di pagina (se si usa \email) e
+%% nella firma, se \signature è vuoto.
+\name{Nome Cognome}
+
+%% COMPILARE: blocco della firma, sotto la formula di chiusura. Righe separate
+%% da \\ . Se esiste il file firma.png viene inserito sopra il testo (larghezza
+%% 5 cm); se non esiste, la riga è semplicemente saltata.
+%% Se si lascia vuoto (\signature{}) viene stampato solo \name.
+\signature{%
+  \IfFileExists{firma.png}{\includegraphics[width=5cm]{firma}\\}{}%
+  Prof.~Nome Cognome \\
+  Università degli Studi di Udine \\
+  Email: nome.cognome@uniud.it}
+
+%% Email del mittente. Compare nel piè di pagina nella riga
+%% "Nome Cognome - email" (il nome è quello di \name). Se si omette \email
+%% la riga non appare.
+\email{nome.cognome@uniud.it}
+
+%% Data. Predefinita: "Udine, <data di oggi>" (in italiano "Udine, lì <data>").
+%% Per fissare una data o cambiare il luogo, togliere il commento e modificare;
+%% con \date{} la data non viene stampata.
+% \date{Udine, November 20, 2026}
+
+
+%% =============================================================================
+%%  4. PIÈ DI PAGINA DELLA CARTA INTESTATA  (tutti i comandi sono facoltativi)
+%% =============================================================================
+%%  Il piè di pagina è un blocco di righe ancorato in basso, che cresce verso
+%%  l'alto. Righe e comandi che le controllano:
+%%
+%%      Dipartimento di scienze Matematiche, Informatiche e Fisiche  sempre (\dipartimento)
+%%      Responsabile del procedimento: <nome> - <email>   solo se c'è \responsabile
+%%      Compilatore del procedimento: <nome> - <email>    solo se c'è \compilatore
+%%      <\name> - <email>                                 solo se c'è \email
+%%      via delle Scienze 206, 33100 Udine (UD), Italia - t <tel> - <sito>   sempre
+%%
+%%  Le righe "Responsabile" e "Compilatore" servono per atti amministrativi
+%%  (decreti, avvisi); in una lettera personale di solito non vanno usate.
+
+% \responsabile{Nome Cognome}{nome.cognome@uniud.it}
+% \compilatore{Nome Cognome}{nome.cognome@uniud.it}
+
+%% Numero di telefono completo da mostrare (predefinito: +39 0432 558400, il
+%% centralino del dipartimento). Comando standard di `letter'.
+% \telephone{+39 0432 55 8xxx}
+
+%% Altri testi del piè di pagina (predefiniti: quelli del DMIF, nella lingua
+%% scelta con l'opzione englishhead).
+% \dipartimento{Dipartimento di scienze Matematiche, Informatiche e Fisiche}
+% \indirizzo{via delle Scienze 206, 33100 Udine (UD), Italia}
+% \sitoweb{www.dmif.uniud.it}          % senza "http://"
+
+
+%% =============================================================================
+%%  5. PERSONALIZZAZIONI AVANZATE  (di solito NON servono)
+%% =============================================================================
+
+%% --- Testi dei due riquadri blu in alto a destra -----------------------------
+%%  I due riquadri sono \dmif@headleft (nome del dipartimento, grassetto, più la
+%%  riga "uniud.it") e \dmif@headright (indirizzo). Le righe si separano con
+%%  \\ . Poiché i nomi contengono @, vanno ridefiniti fra \makeatletter e
+%%  \makeatother. Larghezza massima dei riquadri: 120 bp e 88 bp circa.
+%%  (Gli esempi qui sotto riproducono i valori predefiniti in italiano.)
+% \makeatletter
+% \renewcommand{\dmif@headleft}{%
+%   Dipartimento\\ di scienze Matematiche,\\ Informatiche e Fisiche\\[8.6pt] uniud.it}
+% \renewcommand{\dmif@headright}{%
+%   via delle Scienze 206\\ 33100 Udine, Italia}
+% \makeatother
+
+%% --- Etichette delle righe "Responsabile" e "Compilatore" ---------------------
+%%  Predefinite: italiano "Responsabile del procedimento" / "Compilatore del
+%%  procedimento", inglese (englishhead) "Person in charge of the procedure" /
+%%  "Prepared by". Si cambiano come sopra, con \makeatletter:
+% \makeatletter
+% \renewcommand{\dmif@respstring}{Responsabile del procedimento}
+% \renewcommand{\dmif@compstring}{Compilatore del procedimento}
+% \makeatother
+
+%% --- Larghezza del testo e margini -------------------------------------------
+%%  Predefiniti: testo largo 160 mm, margine sinistro 1 in (25.4 mm), come nella
+%%  vecchia classe dmifletter. Per un testo più largo e centrato:
+% \setlength{\textwidth}{170mm}
+% \setlength{\oddsidemargin}{\dimexpr(\paperwidth-\textwidth)/2-1in\relax}
+% \setlength{\indentedwidth}{.5\textwidth}   % larghezza del blocco data/destinatario/firma
+%%  NON modificare \textheight e \topmargin: sono calcolati in modo che il testo
+%%  stia fra intestazione e piè di pagina della carta intestata.
+
+%% --- Indirizzo del mittente (\address) ---------------------------------------
+%%  Il comando standard \address NON stampa nulla in questa classe (l'indirizzo
+%%  del mittente è già nella carta intestata) e non va usato: se non è vuoto
+%%  può alterare la posizione della formula di chiusura.
+
+
+\begin{document}
+
+%% =============================================================================
+%%  6. LA LETTERA
+%% =============================================================================
+%%  Ogni lettera sta in un ambiente `letter'. L'argomento è il destinatario:
+%%  la PRIMA riga è il nome, le righe successive (separate da \\ ) l'indirizzo.
+%%  Data e destinatario sono stampati in alto, allineati a destra, in un blocco
+%%  largo metà del testo.
+%%
+%%  Si possono mettere PIÙ lettere nello stesso file: basta ripetere l'ambiente
+%%  (vedi esempio commentato in fondo). Ognuna ricomincia da pagina 1 e ha il
+%%  proprio oggetto; nome, firma, email e piè di pagina sono comuni.
+
+%% COMPILARE: destinatario
+\begin{letter}{\fillin{Titolo e Nome del destinatario} \\
+               \fillin{Ente / Struttura} \\
+               \fillin{Indirizzo}}
+
+%% Oggetto (facoltativo, ma va scritto DENTRO l'ambiente letter, prima di
+%% \opening). Stampato come "SUBJECT: ..." (in italiano "OGGETTO: ...").
+%% Si può terminare con il punto o meno. Se si omette, non appare nulla.
+\subject{\fillin{oggetto della lettera}}
+
+%% Saluto iniziale. È anche il punto dove la classe stampa data, destinatario e
+%% oggetto.
+\opening{Egregio \fillin{Sir or Madam},}
+
+%% --- Corpo della lettera -----------------------------------------------------
+%%  Testo normale: i capoversi si separano con una riga vuota. Se il testo supera
+%%  la pagina continua sulla successiva, sotto la stessa carta intestata.
+\fillin{Primo capoverso: motivo della lettera.}
+
+\fillin{Secondo capoverso: sviluppo.}
+
+\fillin{Ultimo capoverso: conclusione e disponibilità a fornire informazioni.}
+
+%% Formula di chiusura e firma. La classe lascia sotto la formula uno spazio
+%% (circa 1.3 cm) per la firma autografa o per l'immagine. Se si usa firma.png e
+%% si vuole avvicinarla alla formula, aggiungere un passo negativo, ad esempio
+%% \closing{Sincerely,\vspace{-1cm}}
+\closing{Cordialmente,}
+
+%% --- Dopo la firma (tutti facoltativi) ---------------------------------------
+%%  \ps{...}    post scriptum
+%%  \cc{...}    destinatari in copia conoscenza (più righe separate da \\ )
+%%  \encl{...}  elenco degli allegati
+% \ps{P.S. \fillin{testo del poscritto}}
+% \cc{\fillin{Nome Cognome} \\ \fillin{Nome Cognome}}
+% \encl{\fillin{elenco degli allegati}}
+
+\end{letter}
+
+
+%% =============================================================================
+%%  7. SECONDA LETTERA NELLO STESSO FILE  (esempio, facoltativo)
+%% =============================================================================
+%%  Togliere il commento per aggiungere una seconda lettera: partirà da una
+%%  nuova pagina 1 (anch'essa su carta intestata).
+%
+% \begin{letter}{\fillin{Altro destinatario} \\ \fillin{Indirizzo}}
+% \subject{\fillin{oggetto}}
+% \opening{Dear \fillin{Sir or Madam},}
+% \fillin{Testo della seconda lettera.}
+%
+% \closing{Sincerely,}
+% \end{letter}
+
+\end{document}
+
+%% =============================================================================
+%%  NOTE FINALI
+%% =============================================================================
+%%  * Lettera in italiano su carta intestata italiana:
+%%      \documentclass[italian,11pt]{dmifblueletter}
+%%      e scrivere \opening{Gentili Signori,}, \closing{Cordiali saluti,}.
+%%  * Lettera in inglese con intestazione in inglese (questo template):
+%%      \documentclass[11pt,englishhead]{dmifblueletter}
+%%  * Stampa su carta già intestata: aggiungere l'opzione nosfondo.
+%%  * Il file dmif-sfondo.png è un PNG A4 (2480 x 3508 px, 300 dpi) estratto dal
+%%    modello Word ufficiale; contiene logo, filetti blu, logo Ateneo e marchi.
+%%    I testi blu e il piè di pagina NON sono nell'immagine: li compone la classe.
+%%  * Termini di licenza: dmifblueletter.cls è una copia rinominata e modificata
+%%    di dmifletter.cls; ne conserva la nota di licenza (vedi testata del file).
