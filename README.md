@@ -1,7 +1,7 @@
 # dmifblueletter — lettera con la nuova intestazione blu DMIF
 
 Versione di `dmifletter.cls` (v1.1) che usa la nuova carta intestata blu al posto di
-`dmifhead.pdf`. Rinominata come richiesto dalla nota di licenza della classe originale.
+`dmifhead.pdf`, conforme al Manuale d'Immagine 2025. Rinominata come richiesto dalla nota di licenza della classe originale.
 
 ## File
 
@@ -10,11 +10,16 @@ Versione di `dmifletter.cls` (v1.1) che usa la nuova carta intestata blu al post
 | `dmifblueletter.cls` | classe (derivata da `letter`) |
 | `dmif-sfondo.png` | fondo grafico A4: logo DMIF, filetti, logo Ateneo, marchi |
 | `template.tex` | **template generale** con tutte le opzioni e i comandi spiegati |
-| `main.tex` | la tua lettera, con solo il nome della classe cambiato |
-| `main.pdf` | anteprima (la firma è un segnaposto: `mysignature.png` non era fra i file) |
+| `template.pdf` | anteprima del template compilato |
 
-Compilare con **pdfLaTeX**. Servono nella cartella del `.tex`: la classe, `dmif-sfondo.png`
-e `mysignature.png` (o quello che usi in `\signature`).
+## Uso
+
+Copiare `dmifblueletter.cls`, `dmif-sfondo.png` e `template.tex` nella cartella della
+lettera, compilare `template.tex` e modificare le parti segnate `COMPILARE`.
+
+Compilare con **pdfLaTeX** (su Overleaf è il compilatore predefinito). Nella cartella del
+`.tex` servono la classe e `dmif-sfondo.png`. La firma è facoltativa: se esiste `firma.png`,
+il template la inserisce sopra il blocco `\signature`, altrimenti la salta.
 
 ## Cosa cambia rispetto a dmifletter v1.1
 
